@@ -18,7 +18,8 @@ namespace
 enum maze_result_t
 {
     SOLVED = 0,
-    NOT_SOLVED
+    NOT_SOLVED,
+    INVALID_PARAM
 };
 
 
@@ -110,9 +111,15 @@ int check_right_neighbor(int** maze, int row, int col)
 }
 
 
+
 maze_result_t check_maze(int** maze, int rows, int cols)
 {
     maze_result_t result = NOT_SOLVED;
+
+    if ((!maze) || (rows < 2) || (cols < 2))
+    {
+        return INVALID_PARAM;
+    }
 
     /* Для проверки напечатаем лабиринт */
     print_maze(maze, rows, cols);
@@ -289,21 +296,126 @@ int main()
         maze[row] = new int[COLS];
     }
 
-    /* Заполним лабиринт случайными 0 и 1 */
-    fill_maze_by_random_numbers(maze, ROWS, COLS);
+    // Testcase 1 // Проходной
+
+    maze[0][0] = 0;
+    maze[0][1] = 1;
+    maze[0][2] = 1;
+    maze[1][0] = 0;
+    maze[1][1] = 1;
+    maze[1][2] = 0;
+    maze[2][0] = 0;
+    maze[2][1] = 1;
+    maze[2][2] = 0;
+    
+    /*
+    0 1 1
+    0 1 0
+    0 1 0
+    */
     
     /* Oтметим обязательные точки входа и выхода */
     set_entrance_and_exit(maze, ROWS, COLS);
 
-    /* Проверим, имеет ли лабиринт решение и напишем соответствующий ответ. */
-    if (check_maze(maze, ROWS, COLS) == SOLVED)
+    maze_result_t expected_result = SOLVED;
+    maze_result_t tested_result = check_maze(maze, ROWS, COLS);
+
+    if (expected_result == tested_result)
     {
-        cout << "MAZE SOLVED!" << endl;
+        cout << "Test 1 passed" << endl;
     }
     else
     {
-        cout << "MAZE NOT SOLVED!" << endl;         
+        cout << "Test 1 not passed" << endl;
     }
+    
+    /* End of Testcase 1 */
+
+    /* Testcase 2. Unable to pass */
+    maze[0][0] = 0;
+    maze[0][1] = 1;
+    maze[0][2] = 1;
+    maze[1][0] = 0;
+    maze[1][1] = 0;
+    maze[1][2] = 0;
+    maze[2][0] = 0;
+    maze[2][1] = 1;
+    maze[2][2] = 0;
+    
+    /*
+    0 1 1
+    0 0 0
+    0 1 0
+    */
+    
+    /* Oтметим обязательные точки входа и выхода */
+    set_entrance_and_exit(maze, ROWS, COLS);
+
+    expected_result = NOT_SOLVED;
+    tested_result = check_maze(maze, ROWS, COLS);
+
+    if (expected_result == tested_result)
+    {
+        cout << "Test 2 passed" << endl;
+    }
+    else
+    {
+        cout << "Test 2 not passed" << endl;
+    }
+    
+    /* End of Testcase 2 */
+
+    /* Testcase 3. Nullptr */
+    expected_result = INVALID_PARAM;
+    tested_result = check_maze(nullptr, ROWS, COLS);
+
+    if (expected_result == tested_result)
+    {
+        cout << "Test 3 passed" << endl;
+    }
+    else
+    {
+        cout << "Test 3 not passed" << endl;
+    }
+
+    /* End of Testcase 3 */
+
+    /* Testcase 4. Invalid size */
+
+    maze[0][0] = 0;
+    maze[0][1] = 1;
+    maze[0][2] = 1;
+    /*
+    0 1 1
+    */
+    expected_result = INVALID_PARAM;
+    tested_result = check_maze(nullptr, 1, COLS);
+
+    if (expected_result == tested_result)
+    {
+        cout << "Test 4 passed" << endl;
+    }
+    else
+    {
+        cout << "Test 4 not passed" << endl;
+    }
+    /* End of Testcase 4 */
+
+    /* Заполним лабиринт случайными 0 и 1 */
+    fill_maze_by_random_numbers(maze, ROWS, COLS);
+    
+    /* Oтметим обязательные точки входа и выхода */
+    // set_entrance_and_exit(maze, ROWS, COLS);
+
+    // /* Проверим, имеет ли лабиринт решение и напишем соответствующий ответ. */
+    // if (check_maze(maze, ROWS, COLS) == SOLVED)
+    // {
+    //     cout << "MAZE SOLVED!" << endl;
+    // }
+    // else
+    // {
+    //     cout << "MAZE NOT SOLVED!" << endl;         
+    // }
 
     /* Мы работали с ручным выделением памяти. Не забываем очистить ее после использования */
     for (size_t row = 0; row < ROWS; row++)
